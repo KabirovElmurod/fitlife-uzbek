@@ -1,17 +1,7 @@
-import { Flame, Droplets, Zap, Target, TrendingDown, Utensils, Dumbbell } from "lucide-react";
-
-const macros = [
-  { label: "Kaloriya", value: "2,150", unit: "kkal", icon: Flame, color: "text-primary" },
-  { label: "Protein", value: "120", unit: "g", icon: Zap, color: "text-info" },
-  { label: "Yog'", value: "65", unit: "g", icon: Droplets, color: "text-warning" },
-  { label: "Uglevodlar", value: "280", unit: "g", icon: Target, color: "text-destructive" },
-];
-
-const todayMeals = [
-  { time: "07:00", name: "Sut bilan bo'tqa", cal: 350 },
-  { time: "12:00", name: "Osh (palov)", cal: 650 },
-  { time: "19:00", name: "Sabzavotli go'sht sho'rva", cal: 450 },
-];
+import { useState, useEffect } from "react";
+import { Flame, Droplets, Zap, Target, TrendingDown, Utensils, Dumbbell, Plus } from "lucide-react";
+import { getTodayMeals, saveTodayMeals, defaultMealSlots } from "@/lib/mealStore";
+import MealSlotEditor from "@/components/MealSlotEditor";
 
 const todayWorkouts = [
   { name: "Yugurib isitish", duration: "10 daq" },
@@ -20,8 +10,45 @@ const todayWorkouts = [
 ];
 
 export default function Dashboard() {
+  const [mealSlots, setMealSlots] = useState(() => {
+    const saved = getTodayMeals();
+    return defaultMealSlots.map(slot => ({
+      ...slot,
+      time: saved[slot.id]?.time || slot.time,
+      items: saved[slot.id]?.items || [],
+    }));
+  });
+
+  useEffect(() => {
+    const data = {};
+    mealSlots.forEach(slot => {
+      data[slot.id] = { time: slot.time, items: slot.items };
+    });
+    saveTodayMeals(data);
+  }, [mealSlots]);
+
+  const totalCal = mealSlots.reduce((s, slot) => s + slot.items.reduce((ss, i) => ss + (i.cal || 0), 0), 0);
+  const totalProtein = mealSlots.reduce((s, slot) => s + slot.items.reduce((ss, i) => ss + (i.protein || 0), 0), 0);
+  const totalFat = mealSlots.reduce((s, slot) => s + slot.items.reduce((ss, i) => ss + (i.fat || 0), 0), 0);
+  const totalCarb = mealSlots.reduce((s, slot) => s + slot.items.reduce((ss, i) => ss + (i.carb || 0), 0), 0);
+
+  const macros = [
+    { label: "Kaloriya", value: totalCal.toLocaleString(), unit: "kkal", icon: Flame, color: "text-primary" },
+    { label: "Protein", value: totalProtein.toString(), unit: "g", icon: Zap, color: "text-info" },
+    { label: "Yog'", value: totalFat.toString(), unit: "g", icon: Droplets, color: "text-warning" },
+    { label: "Uglevodlar", value: totalCarb.toString(), unit: "g", icon: Target, color: "text-destructive" },
+  ];
+
+  const updateSlotItems = (slotId, items) => {
+    setMealSlots(prev => prev.map(s => s.id === slotId ? { ...s, items } : s));
+  };
+
+  const updateSlotTime = (slotId, time) => {
+    setMealSlots(prev => prev.map(s => s.id === slotId ? { ...s, time } : s));
+  };
+
   return (
-    <div className="px-4 pt-6">
+    <div className="px-4 pt-6 pb-24">
       <div className="mb-6">
         <h1 className="font-display font-bold text-2xl text-foreground">Salom, Foydalanuvchi! 👋</h1>
         <p className="text-muted-foreground text-sm">Bugungi rejangiz tayyor</p>
@@ -46,7 +73,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Macros */}
+      {/* Macros - dynamic */}
       <div className="grid grid-cols-2 gap-3 mb-6">
         {macros.map((m) => (
           <div key={m.label} className="glass-card p-4">
@@ -62,21 +89,21 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Today meals */}
+      {/* Today meals - editable */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
           <Utensils className="w-5 h-5 text-primary" />
           <h2 className="font-display font-bold text-lg text-foreground">Bugungi ovqat</h2>
         </div>
-        <div className="space-y-2">
-          {todayMeals.map((m, i) => (
-            <div key={i} className="glass-card p-4 flex items-center justify-between">
-              <div>
-                <span className="text-xs text-muted-foreground">{m.time}</span>
-                <p className="font-semibold text-foreground">{m.name}</p>
-              </div>
-              <span className="text-sm font-medium text-primary">{m.cal} kkal</span>
-            </div>
+        <div className="space-y-3">
+          {mealSlots.map((slot) => (
+            <MealSlotEditor
+              key={slot.id}
+              slot={slot}
+              items={slot.items}
+              onChange={(items) => updateSlotItems(slot.id, items)}
+              onTimeChange={(time) => updateSlotTime(slot.id, time)}
+            />
           ))}
         </div>
       </div>

@@ -43,7 +43,7 @@ const stats = [
   { icon: Calendar, label: "Izchillik", value: "85%", color: "text-primary" },
 ];
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="glass-card p-3 text-xs">

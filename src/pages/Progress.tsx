@@ -115,7 +115,46 @@ export default function Progress() {
           </TabsList>
         </Tabs>
 
+        <div className="glass-card p-5 mb-6">
+        <h2 className="font-display font-bold text-foreground mb-4">📉 Vazn o'zgarishi</h2>
         <div className="h-52">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={calorieComparison}>
+              <defs>
+                <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(152, 60%, 42%)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(152, 60%, 42%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(148, 15%, 90%)" />
+              <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(150, 5%, 50%)" }} />
+              <YAxis domain={["dataMin - 0.5", "dataMax + 0.5"]} tick={{ fontSize: 11, fill: "hsl(150, 5%, 50%)" }} />
+              <Tooltip content={<CustomTooltip />} />
+              {(calorieView === "combined" || calorieView === "ai") && (
+                <Area
+                type="monotone" dataKey="ai" name="Kaloriya"
+                stroke="hsl(152, 60%, 42%)" strokeWidth={2.5}
+                fill="url(#weightGrad)"
+                dot={{ r: 4, fill: "hsl(152, 60%, 42%)", strokeWidth: 2, stroke: "#fff" }}
+              />
+              )}
+              {(calorieView === "combined" || calorieView === "user") && (
+                <Area
+                type="monotone" dataKey="user" name="Kaloriya"
+                stroke="hsl(201, 60%, 42%)" strokeWidth={2.5}
+                fill="url(#weightGrad)"
+                dot={{ r: 4, fill: "hsl(201, 60%, 42%)", strokeWidth: 2, stroke: "#fff" }}
+              />
+              )}
+              {calorieView === "combined" && <Legend wrapperStyle={{ fontSize: 11 }} />}
+              
+              
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+        {/* <div className="h-52">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={calorieComparison} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(148, 15%, 90%)" />
@@ -131,7 +170,7 @@ export default function Progress() {
               {calorieView === "combined" && <Legend wrapperStyle={{ fontSize: 11 }} />}
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </div> */}
       </div>
 
       {/* Per-meal calorie chart */}

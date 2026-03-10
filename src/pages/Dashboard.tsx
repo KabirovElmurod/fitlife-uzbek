@@ -95,7 +95,7 @@ export default function Dashboard() {
           <Utensils className="w-5 h-5 text-primary" />
           <h2 className="font-display font-bold text-lg text-foreground">Bugungi ovqat</h2>
         </div>
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {mealSlots.map((slot) => (
             <MealSlotEditor
               key={slot.id}

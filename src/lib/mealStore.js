@@ -2,6 +2,7 @@
 
 const STORAGE_KEY = "fitlife_meals";
 const CUSTOM_FOODS_KEY = "fitlife_custom_foods";
+const CUSTOM_SLOTS_KEY = "fitlife_custom_slots";
 
 // O'zbek milliy taomlari va kaloriyalari (AI bazasi)
 export const foodDatabase = [
@@ -126,4 +127,35 @@ export function saveCustomFood(food) {
 
 export function getAllFoods() {
   return [...foodDatabase, ...getCustomFoods()];
+}
+
+// Custom meal slots management
+export function getCustomSlots() {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOM_SLOTS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+export function saveCustomSlot(label, time) {
+  const customSlots = getCustomSlots();
+  const newSlot = {
+    id: `custom_${Date.now()}`,
+    label,
+    time,
+    isCustom: true
+  };
+  customSlots.push(newSlot);
+  localStorage.setItem(CUSTOM_SLOTS_KEY, JSON.stringify(customSlots));
+  return newSlot;
+}
+
+export function deleteCustomSlot(slotId) {
+  const customSlots = getCustomSlots().filter(slot => slot.id !== slotId);
+  localStorage.setItem(CUSTOM_SLOTS_KEY, JSON.stringify(customSlots));
+}
+
+export function getAllMealSlots() {
+  return [...defaultMealSlots, ...getCustomSlots()];
 }

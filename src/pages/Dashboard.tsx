@@ -223,7 +223,7 @@ export default function Dashboard() {
           <Utensils className="w-5 h-5 text-primary" />
           <h2 className="font-display font-bold text-lg text-foreground">Taklif etilgan taomlar</h2>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {getAllFoods().slice(0, 12).map((food, i) => (
             <div key={i} className="glass-card overflow-hidden flex flex-col">
               {/* Image placeholder */}

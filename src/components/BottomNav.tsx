@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, LayoutDashboard, Utensils, Dumbbell, TrendingUp, Settings } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Bosh" },
@@ -28,6 +29,9 @@ export default function BottomNav() {
             </Link>
           );
         })}
+        <div className="flex items-center justify-center">
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );
